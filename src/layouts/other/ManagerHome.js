@@ -22,8 +22,9 @@ function ManagerHome() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // dispatch(GetMyTickets());
-    if (!userData) dispatch(GetAllUsers());
+    if (userData.length === 0) {
+      dispatch(GetAllUsers());
+    }
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (
       metaThemeColor &&
@@ -57,6 +58,9 @@ function ManagerHome() {
 
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
+    if (user != "") {
+      dispatch(GetMyTickets(event.target.value));
+    }
   };
 
   const handleClose = () => {

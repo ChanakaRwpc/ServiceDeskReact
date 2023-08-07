@@ -29,8 +29,8 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   const handleLogin = async (userName, password) => {
-    var token = Encryption(userName + "`" + password);
-    // var token = "3KgtJTtBF/J5KAZ8XcRQwGM4vTOXC9091r4XDPAPrOA=";
+    // var token = Encryption(userName + "`" + password);
+    var token = "3KgtJTtBF/J5KAZ8XcRQwGM4vTOXC9091r4XDPAPrOA=";
     await dispatch(loginNew(token, navigate));
   };
   const handleLogout = () => {
