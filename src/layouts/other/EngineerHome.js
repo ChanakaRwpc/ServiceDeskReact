@@ -1,71 +1,91 @@
 import React, { useEffect } from "react";
 import ResponsiveAppBar from "../../components/AppBar/ResponsiveAppBar";
-import MapCards from "../../components/Cards/MapCards";
-import EarningCard from "../../components/Cards/EarningCard";
-import { Box, Grid } from "@mui/material";
+import {  Grid, Skeleton, Stack, Typography } from "@mui/material";
 import EngineeringCard from "../../components/Cards/EngineeringCard";
 import { GetMyTickets } from "../../action/Ticket";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 function EngineerHome() {
-  const { ticketData } = useSelector((state) => state.ticket);
+  const { ticketData, loading } = useSelector((state) => state.ticket);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    dispatch(GetMyTickets());
-    // Get the meta[name="theme-color"] element
+
+    dispatch(GetMyTickets("", navigate));
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-
-    // Check if the element exists and the browser supports CSS variables (CSS Custom Properties)
-    if (metaThemeColor && window.CSS && CSS.supports('color', 'var(--fake-var)')) {
-      // Define your gradient using CSS variables
-      const gradient = 'linear-gradient(to right, var(--start-color), var(--end-color))';
-
-      // Apply the gradient CSS class to the body element or any other container element
-      document.body.classList.add('gradient-theme');
-
-      // Update the "content" attribute of the meta tag with the gradient value
-      metaThemeColor.setAttribute('content', gradient);
+    
+    if (
+      metaThemeColor &&
+      window.CSS &&
+      CSS.supports("color", "var(--fake-var)")
+    ) {
+      const gradient =
+        "linear-gradient(to right, var(--start-color), var(--end-color))";
+      document.body.classList.add("gradient-theme");
+      metaThemeColor.setAttribute("content", gradient);
     } else {
-      // Fallback for browsers that don't support CSS variables or other gradient-related issues
-      metaThemeColor.setAttribute('content', '#fff');
+      metaThemeColor.setAttribute("content", "#fff");
     }
   }, []);
 
   return (
-    // <div  style={{backgroundColor:'red'}}>
     <Grid
       container
       spacing={2}
       sx={{
         alignItems: "center",
         justifyContent: "center",
-        //bgcolor: "#F8F9FA",
       }}
     >
       <Grid item xs={12}>
         <ResponsiveAppBar></ResponsiveAppBar>
       </Grid>
 
-      <Grid
-        item
-        xs={12}
-        sx={{
-          //bgcolor: "#fff1ef",
-        }}
-      >
-        <Grid>
-          <Grid item lg={12} md={12} sm={12} xs={12}>
-            {ticketData.map((item, index) => (
-              <EngineeringCard
-                key={index}
-                ticketData={item}
-                //onlyvisibity={false}
-              ></EngineeringCard>
-            ))}
-          </Grid>
+      <Grid item xs={12}>
+        <Grid sx={{ margin: 1 }}>
+          <div style={{ padding: 1, marginLeft: 8 }}>
+            <Typography variant="h7" color="#646464" fontWeight={500}>
+              Available Tikects
+            </Typography>
+          </div>
+
+          {loading ? (
+            <Stack spacing={1}>
+              <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
+              <Skeleton variant="rectangular" width={"100%"} height={60} />
+              <Skeleton variant="rounded" width={"100%"} height={60} />
+            </Stack>
+          ) : (
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              {ticketData.length > 0 ? (
+                <>
+                  {ticketData.map((item, index) => (
+                    <EngineeringCard
+                      key={index}
+                      ticketData={item}
+                      onlyvisibity={false}
+                    ></EngineeringCard>
+                  ))}
+                </>
+              ) : (
+                <div style={{ padding: 1, marginTop: "10%" }}>
+                  <Typography
+                    variant="h5"
+                    color="#646464"
+                    fontWeight={500}
+                    textAlign={"center"}
+                  >
+                    Currently you don't have any pending tickets.
+                  </Typography>
+                </div>
+              )}
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>
-    // </div>
   );
 }
 

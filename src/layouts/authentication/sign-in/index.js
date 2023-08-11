@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -13,17 +13,28 @@ import "react-phone-input-2/lib/style.css";
 import logo from "../../../assets/images/logo.png";
 import "react-toastify/dist/ReactToastify.css";
 import AuthContext from "../../../context/AuthContext";
-
+import { toast } from "react-toastify";
 function SignIn(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { handleLogin } = useContext(AuthContext);
   const { loading } = useSelector((state) => state.auth);
 
-  const Login = async () => {
-    await handleLogin(username, password);
+  const validate = () => {
+    let isValid = true;
+    if (username === "" || password === "") {
+      isValid = false;
+      toast.error("Please Enter Valid User Name and Password.");
+    }
+    return isValid;
   };
-  
+
+  const Login = async () => {
+    if (validate()) {
+      await handleLogin(username, password);
+    }
+  };
+
   const styles = {
     container: {
       height: "100vh",
@@ -104,7 +115,7 @@ function SignIn(props) {
             />
             <Button
               variant="contained"
-               //color="inherit"
+              //color="inherit"
               size="large"
               disabled={loading}
               onClick={Login}
@@ -112,7 +123,6 @@ function SignIn(props) {
                 borderRadius: "40px",
                 marginTop: "1rem",
                 backgroundColor: "#FF735C",
-                
               }}
               fullWidth
             >
@@ -122,7 +132,7 @@ function SignIn(props) {
                 <Typography
                   sx={{
                     fontWeight: 600,
-                    color: "#FFFFFF"
+                    color: "#FFFFFF",
                   }}
                 >
                   Go

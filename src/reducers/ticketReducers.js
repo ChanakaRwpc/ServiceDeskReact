@@ -34,6 +34,7 @@ export const tikectReducer = (state = initialState, action) => {
       return {
         ...state,
         error: action.payload.error,
+        loading: false,
       };
     case TICKET_INTERACT_REQUEST:
       return {
@@ -47,6 +48,7 @@ export const tikectReducer = (state = initialState, action) => {
       return {
         ...state,
         error: action.payload.error,
+        loading: false,
       };
     case TICKET_COMPLETE_INTERACT_REQUEST:
       return {

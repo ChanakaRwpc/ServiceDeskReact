@@ -5,8 +5,9 @@ import {
 } from "../constants/common";
 import CommonService from "../service/CommonService";
 import { toast } from "react-toastify";
+import { logOut } from "./Login";
 
-export const GetAllUsers = () => async (dispatch) => {
+export const GetAllUsers = (navigate) => async (dispatch) => {
   dispatch({
     type: GETALLUSER_REQUEST,
   });
@@ -41,7 +42,11 @@ export const GetAllUsers = () => async (dispatch) => {
         type: GETALLUSER_FAIL,
         payload: { error: message },
       });
-      return Promise.reject();
+      if (error.response.data.status === 401) {
+        toast.info("Current session expired. Please sign in again.");
+        logOut(navigate);
+      }
+     // return Promise.reject();
     }
   );
 };

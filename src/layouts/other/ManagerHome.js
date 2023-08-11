@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import ResponsiveAppBar from "../../components/AppBar/ResponsiveAppBar";
-import MapCards from "../../components/Cards/MapCards";
-import EarningCard from "../../components/Cards/EarningCard";
-import { Box, Grid, Skeleton, Stack } from "@mui/material";
+
+import { Grid, Skeleton, Stack } from "@mui/material";
 import EngineeringCard from "../../components/Cards/EngineeringCard";
 import { GetMyTickets } from "../../action/Ticket";
 import { GetAllUsers } from "../../action/Common";
@@ -11,19 +10,19 @@ import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
+import { useNavigate } from "react-router-dom";
 
 function ManagerHome() {
   const { ticketData, loading } = useSelector((state) => state.ticket);
   const { userData } = useSelector((state) => state.allUser);
   const [user, setUser] = React.useState("");
   const [status, setStatus] = React.useState("");
-  const [open, setOpen] = React.useState(false);
   const [filteredData, setFilteredData] = React.useState([]);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (userData.length === 0) {
-      dispatch(GetAllUsers());
+      dispatch(GetAllUsers(navigate));
     }
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (
@@ -47,28 +46,20 @@ function ManagerHome() {
       );
       setFilteredData(filtered);
     }
-  }, [status, ticketData]);
+  }, [status, ticketData, dispatch, navigate, userData.length]);
 
   const handleUserChange = (event) => {
     setUser(event.target.value);
-    if (status != "") {
-      dispatch(GetMyTickets(event.target.value));
+    if (status !== "") {
+      dispatch(GetMyTickets(event.target.value, navigate));
     }
   };
 
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
-    if (user != "") {
-      dispatch(GetMyTickets(event.target.value));
+    if (user !== "") {
+      dispatch(GetMyTickets(event.target.value, navigate));
     }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
   };
 
   return (

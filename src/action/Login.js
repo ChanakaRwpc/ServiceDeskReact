@@ -1,9 +1,6 @@
 import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  SET_MESSAGE,
-  OTP_SUCCESS,
-  OTP_FAIL,
   LOGIN_REQUEST,
 } from "../constants/userConstants";
 
@@ -14,6 +11,7 @@ export const loginNew = (token, navigate) => async (dispatch) => {
   dispatch({
     type: LOGIN_REQUEST,
   });
+  console.log(token);
   return await AuthService.login(token).then(
     (data) => {
       if (data.data.sessionGuid) {
@@ -57,36 +55,28 @@ export const loginNew = (token, navigate) => async (dispatch) => {
         type: LOGIN_FAIL,
         payload: { error: message },
       });
-      return Promise.reject();
+      toast.error("Not Registed User!");
+      //  return Promise.reject();
     }
   );
 };
 
 export const logOut = async (navigate) => {
-  console.log("chanka");
   await localStorage.removeItem("user");
   await localStorage.removeItem("sessionGuid");
+  await localStorage.removeItem("userType");
   navigate(`/login`);
   return Promise.resolve();
 };
 
-export const checkVerification = (isDone, user, navigate) => (dispatch) => {
-  setTimeout(() => {
-    if (isDone) {
-      dispatch({
-        type: OTP_SUCCESS,
-        payload: { user: user },
-      });
-      //localStorage.setItem("user", JSON.stringify(user));
-      // console.log("cookie " + user)
-      //  navigate(`/`);
-    } else {
-      dispatch({
-        type: OTP_FAIL,
-        payload: { error: "Invalid OTP Code." },
-      });
-      toast.error("Invalid OTP Code.");
-    }
-    return Promise.resolve();
-  }, 1000);
+export const loadUser = (data, navigate) => async (dispatch) => {
+  dispatch({
+    type: LOGIN_SUCCESS,
+    payload: {
+      user: JSON.parse(localStorage.getItem("user")),
+      userType: JSON.parse(localStorage.getItem("userType")),
+      sessionGuid: JSON.parse(localStorage.getItem("sessionGuid")),
+    },
+  });
+  navigate(`/`);
 };

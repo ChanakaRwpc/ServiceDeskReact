@@ -1,24 +1,27 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
-// import { AuthProvider } from "./layouts/authentication/authProvider/AuthProvider";
 import Signin from "./layouts/authentication/sign-in";
 import EngineerHome from "./layouts/other/EngineerHome";
 import ManagerHome from "./layouts/other/ManagerHome";
-import Verification from "./layouts/authentication/verification";
-// import EngineerHome from "./layouts/other/EngineerHome";
 import ProtectedRoute from "./route/ProtectedRoute";
-import Protected from "./route/Protected";
 import { AuthContextProvider } from "./context/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
-// import AppBar from "./components/AppBar/ResponsiveAppBar";
-import AppBar from "@mui/material/AppBar";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { useSelector } from "react-redux";
+import store from "./store";
+import { loadUser } from "./action/Login";
 
 function App() {
   const { userType } = useSelector((state) => state.auth);
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("sessionGuid"));
+    if (data) store.dispatch(loadUser(data, navigate));
+  }, []);
+
   return (
     <AuthContextProvider>
       <ToastContainer
@@ -34,7 +37,6 @@ function App() {
         theme="colored"
       />
       <StyledEngineProvider injectFirst>
-        {/* <ProtectedRoute /> */}
         <Routes>
           <Route element={<ProtectedRoute />}>
             {userType === "User" ? (
@@ -42,12 +44,10 @@ function App() {
             ) : (
               <Route element={<ManagerHome />} path="/" exact />
             )}
-             {/* <Route element={<ManagerHome />} path="/home" /> */}
           </Route>
-          <Route element={<Signin />} path="/" />
-          <Route element={<Signin />} path="/login" />
-          <Route element={<Signin />} path="/*" />
-          {/* <Route element={<Verification />} path="/Verification" /> */}
+          <Route element={<Signin />} path="/" exact />
+          <Route element={<Signin />} path="/login" exact />
+          <Route element={<Signin />} path="/*" exact />
         </Routes>
       </StyledEngineProvider>
     </AuthContextProvider>

@@ -37,6 +37,8 @@ export const authReducer = (state = initialState, action) => {
       return {
         ...state,
         error: action.payload.error,
+        isLoggedIn: false,
+        loading: false,
       };
     default:
       return state;

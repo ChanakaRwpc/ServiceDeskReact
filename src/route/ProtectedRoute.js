@@ -2,8 +2,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = () => {
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
-  const userCode = JSON.parse(localStorage.getItem("user"));
+  const { isLoggedIn } = useSelector((state) => state.auth);
   return isLoggedIn ? <Outlet /> : <Navigate to="/login" />;
 };
 

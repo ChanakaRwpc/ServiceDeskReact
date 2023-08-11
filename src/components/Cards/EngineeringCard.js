@@ -21,6 +21,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { Box, CardActionArea, Grid, Paper, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { TicketInteract, CompleteInteract } from "../../action/Ticket";
+import { useNavigate } from "react-router-dom";
 // import logo from "../../assets/images/successfully-done.gif";
 import logo from "../../assets/images/Tick.gif";
 const CardWrapper = styled(Card)(({ theme }) => ({
@@ -90,24 +91,23 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
     Number(ticketData.freeHrs)
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     let interval;
-    // if (isTimerRunning) {
     if (currentStatus === "Paused") {
+      console.log("paused");
       interval = setInterval(() => {
         setTotalFreeSeconds((prevSeconds) => prevSeconds + 1);
       }, 1000);
     } else if (currentStatus === "Resumed") {
+      console.log("Resumed");
       interval = setInterval(() => {
         setTotalWorkSeconds((prevSeconds) => prevSeconds + 1);
       }, 1000);
     } else {
-      setTotalWorkSeconds(0);
-      setTotalFreeSeconds(0);
+      // setTotalWorkSeconds(0);
+      // setTotalFreeSeconds(0);
     }
-    // } else {
-    //   clearInterval(interval);
-    // }
 
     return () => clearInterval(interval);
   }, [currentStatus]);
@@ -128,7 +128,6 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
   };
 
   const handleBUttonClick = (id) => {
-    //setIsTimerRunning(!isTimerRunning);
     setCurrentStatus(
       currentStatus === "Paused"
         ? "Resumed"
@@ -136,11 +135,11 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
         ? "Paused"
         : "Resumed"
     );
-    dispatch(TicketInteract(id));
+    dispatch(TicketInteract(id, navigate));
   };
 
   const handleBUttonCompleteClick = (id) => {
-    dispatch(CompleteInteract(id));
+    dispatch(CompleteInteract(id, navigate));
     setIsViewOnly(true);
   };
   return (
@@ -172,8 +171,8 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                     color="black"
                     sx={{
                       fontSize: 16,
-                      fontWeight: 600,
-                      fontFamily: "Segoe UI Symbol",
+                      fontWeight: 'bold',
+                      fontFamily: "sans-serif",
                       //  backgroundColor:'red'
                     }}
                   >
@@ -186,7 +185,7 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                     sx={{
                       fontSize: 10,
                       fontWeight: 600,
-                      fontFamily: "Segoe UI Symbol",
+                      fontFamily: "sans-serif",
                       color: "#FF735C",
                       //  backgroundColor:'red'
                     }}
@@ -199,7 +198,7 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                       fontSize: 10,
                       fontWeight: 600,
                       marginLeft: 2,
-                      fontFamily: "Segoe UI Symbol",
+                      fontFamily: "sans-serif",
                       color: "#FF735C",
                     }}
                   >
@@ -220,7 +219,7 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                     sx={{
                       fontSize: 12,
                       fontWeight: 600,
-                      fontFamily: "Segoe UI Symbol",
+                      fontFamily: "sans-serif",
                       wordWrap: "break-word", // or overflowWrap: "break-word"
                     }}
                   >
@@ -231,7 +230,7 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                     sx={{
                       fontSize: 12,
                       fontWeight: 300,
-                      fontFamily: "Segoe UI Symbol",
+                      fontFamily: "sans-serif",
                       wordWrap: "break-word", // or overflowWrap: "break-word"
                     }}
                   >
@@ -260,28 +259,38 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
                     )}
                   </>
                 ) : (
-                  <IconButton
-                    id="start_button"
-                    onClick={() => {
-                      handleBUttonClick(ticketData.primaryIdentifier);
-                    }}
-                  >
-                    {currentStatus === "Resumed" ? (
-                      <PauseCircleIcon
-                        sx={{
-                          color: "#FF735C",
-                          fontSize: 50,
-                        }}
+                  <>
+                    {viewOnly ? (
+                      <img
+                        src={logo}
+                        alt="Centered Image"
+                        style={{ width: 75 }}
                       />
                     ) : (
-                      <PlayCircleFilledIcon
-                        sx={{
-                          color: "#FF735C",
-                          fontSize: 50,
+                      <IconButton
+                        id="start_button"
+                        onClick={() => {
+                          handleBUttonClick(ticketData.primaryIdentifier);
                         }}
-                      />
+                      >
+                        {currentStatus === "Resumed" ? (
+                          <PauseCircleIcon
+                            sx={{
+                              color: "#FF735C",
+                              fontSize: 50,
+                            }}
+                          />
+                        ) : (
+                          <PlayCircleFilledIcon
+                            sx={{
+                              color: "#FF735C",
+                              fontSize: 50,
+                            }}
+                          />
+                        )}
+                      </IconButton>
                     )}
-                  </IconButton>
+                  </>
                 )}
               </Box>
             </Box>
@@ -353,19 +362,25 @@ export default function RecipeReviewCard({ key, ticketData, onlyvisibity }) {
               {onlyvisibity ? (
                 <></>
               ) : (
-                <IconButton
-                  id="start_button"
-                  onClick={() => {
-                    handleBUttonCompleteClick(ticketData.primaryIdentifier);
-                  }}
-                >
-                  <CheckCircleIcon
-                    sx={{
-                      color: "#FF735C",
-                      fontSize: 50,
-                    }}
-                  />
-                </IconButton>
+                <>
+                  {viewOnly ? (
+                    <></>
+                  ) : (
+                    <IconButton
+                      id="start_button"
+                      onClick={() => {
+                        handleBUttonCompleteClick(ticketData.primaryIdentifier);
+                      }}
+                    >
+                      <CheckCircleIcon
+                        sx={{
+                          color: "#FF735C",
+                          fontSize: 50,
+                        }}
+                      />
+                    </IconButton>
+                  )}
+                </>
               )}
             </Box>
           </Box>

@@ -12,8 +12,9 @@ import {
 
 import TicketService from "../service/TicketService";
 import { toast } from "react-toastify";
+import { logOut } from "./Login";
 
-export const GetMyTickets = (id) => async (dispatch) => {
+export const GetMyTickets = (id, navigate) => async (dispatch) => {
   const userType = JSON.parse(localStorage.getItem("userType"));
   const sessionId = JSON.parse(localStorage.getItem("sessionGuid"));
   let userIDFilter = "";
@@ -25,11 +26,11 @@ export const GetMyTickets = (id) => async (dispatch) => {
   let requestdata = JSON.stringify({
     // userIDFilter: "4860",
     // userIDFilter: "4859",
-    // userIDFilter: "4878",
+    //  userIDFilter: "4878",
     userIDFilter: userIDFilter,
     sessionGuid: sessionId,
+    // sessionGuid: '9c40859f-dd13-457d-b4bc-097922c713c4',
   });
-  console.log(requestdata);
   dispatch({
     type: TICKET_REQUEST,
   });
@@ -64,17 +65,20 @@ export const GetMyTickets = (id) => async (dispatch) => {
         type: TICKET_FAIL,
         payload: { error: message },
       });
-      return Promise.reject();
+
+      if (error.response.data.status === 401) {
+        toast.info("Current session expired. Please sign in again.");
+        logOut(navigate);
+      }
     }
   );
 };
 
-export const TicketInteract = (ticketId) => async (dispatch) => {
+export const TicketInteract = (ticketId, navigate) => async (dispatch) => {
   let requestdata = JSON.stringify({
     ticketId: ticketId,
     dateTime: getCurrentDateTime(),
   });
-  console.log(requestdata);
   dispatch({
     type: TICKET_INTERACT_REQUEST,
   });
@@ -102,22 +106,25 @@ export const TicketInteract = (ticketId) => async (dispatch) => {
           error.response.data.message) ||
         error.message ||
         error.toString();
-
       dispatch({
         type: TICKET_INTERACT_FAIL,
         payload: { error: message },
       });
-      return Promise.reject();
+      if (error.response.data.status === 401) {
+        toast.info("Current session expired. Please sign in again.");
+        logOut(navigate);
+      }
+      //  return Promise.reject();
     }
   );
 };
 
-export const CompleteInteract = (ticketId) => async (dispatch) => {
+export const CompleteInteract = (ticketId, navigate) => async (dispatch) => {
   let requestdata = JSON.stringify({
     ticketId: ticketId,
     dateTime: getCurrentDateTime(),
   });
-  console.log(requestdata);
+
   dispatch({
     type: TICKET_COMPLETE_INTERACT_REQUEST,
   });
@@ -128,6 +135,7 @@ export const CompleteInteract = (ticketId) => async (dispatch) => {
           type: TICKET_COMPLETE_INTERACT_SUCCESS,
           payload: {},
         });
+        toast.success("Ticket completed");
       } else {
         dispatch({
           type: TICKET_COMPLETE_INTERACT_FAIL,
@@ -150,7 +158,11 @@ export const CompleteInteract = (ticketId) => async (dispatch) => {
         type: TICKET_COMPLETE_INTERACT_FAIL,
         payload: { error: message },
       });
-      return Promise.reject();
+      if (error.response.data.status === 401) {
+        toast.info("Current session expired. Please sign in again.");
+        logOut(navigate);
+      }
+      //return Promise.reject();
     }
   );
 };

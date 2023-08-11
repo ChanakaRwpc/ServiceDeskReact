@@ -19,18 +19,26 @@ export const AuthContextProvider = ({ children }) => {
   function Encryption(number) {
     var key = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_API_KEY);
     var iv = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_API_KEY);
-    var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(number), key, {
-      keySize: 64 / 4,
-      iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
+    var encrypted = CryptoJS.AES.encrypt(
+      CryptoJS.enc.Utf8.parse(number),
+      key,
+      {
+        keySize: 64 / 4,
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    );
+    // console.log(encrypted.toString());
     return encrypted.toString();
   }
+  
 
   const handleLogin = async (userName, password) => {
-    // var token = Encryption(userName + "`" + password);
-    var token = "3KgtJTtBF/J5KAZ8XcRQwGM4vTOXC9091r4XDPAPrOA=";
+      var token = Encryption(userName + "`" + password);
+    //  console.log(token);
+    // var token = "3KgtJTtBF/J5KAZ8XcRQwGM4vTOXC9091r4XDPAPrOA=";
+    
     await dispatch(loginNew(token, navigate));
   };
   const handleLogout = () => {
